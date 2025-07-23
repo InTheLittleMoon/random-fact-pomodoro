@@ -2,27 +2,39 @@ import React, { useState, useEffect } from "react";
 import "../../App.css";
 
 function Clock({ setAppPhase }) {
+  //states
   const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
-
-  useEffect(() => {
-    if (timeLeft === 0) return;
-    const interval = setInterval(() => {
-      setTimeLeft((prev) => prev - 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [timeLeft]);
+  const [isPaused, setIsPaused] = useState(false);
 
   // Format time as MM:SS
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
 
+  // Effect to handle the countdown timer
+  useEffect(() => {
+    let timer;
+    if (!isPaused && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer); // Cleanup the timer on unmount or pause
+  }, [isPaused, timeLeft]);
 
+  //Handles reset functionality
   const handleReset = () => {
-    // Logic to reset the timer can be added here
-    //should bring timer back to 25 minutes
+    setTimeLeft(25 * 60);
+  };
 
-    //for testing
-    setAppPhase("end")
+  //Handles pause and resume functionality
+  const handlePause = (command) => {
+    setIsPaused(true);
+    if (command === "pause") {
+      setTimeLeft((prev) => prev); // Keep the current time left
+    } else if (command === "resume") {
+      setIsPaused(false);
+      // Resume logic can be handled by the useEffect
+    }
   };
 
   return (
@@ -31,8 +43,19 @@ function Clock({ setAppPhase }) {
         <button className="pixelify" onClick={() => setAppPhase("idle")}>
           Main Menu
         </button>
+        {/* resume / pause options based off isPaused state  */}
+        {isPaused ? (
+          <button className="pixelify" onClick={() => handlePause("resume")}>
+            Resume
+          </button>
+        ) : (
+          <button className="pixelify" onClick={() => handlePause("pause")}>
+            Pause
+          </button>
+        )}
+
         <button className="pixelify" onClick={handleReset}>
-          Reset timer -  ends timer for testing
+          Reset timer
         </button>
       </div>
       <p>
