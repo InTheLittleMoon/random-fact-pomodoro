@@ -1,7 +1,9 @@
 import React from "react";
+import "../../App.css";
 
 function FactBox() {
-  return <div>FactBox</div>;
+  console.log("FactBox component rendered");
+  return <div className="factBox-block">Random Facts Here</div>;
 }
 
 export default FactBox;
